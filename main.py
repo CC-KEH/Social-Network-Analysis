@@ -50,4 +50,3 @@ if __name__ == "__main__":
     file_path = 'dataset.txt'
     txt_to_graph(file_path,G)
     visualize(G)
-
