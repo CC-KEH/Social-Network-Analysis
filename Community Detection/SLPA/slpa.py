@@ -1,10 +1,3 @@
-# slpa.py
-# Author: Preston Scott pdscott2
-# CSC 591
-# Given an edgelist, this script builds the graph, then performs overlapping
-# community identification using the Speaker-listener Label Propagation Algorithm
-# (SLPA)
-
 import random
 import sys
 

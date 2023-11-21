@@ -6,8 +6,8 @@ import time
 
 def clique_percolation_method(graph, k = 3, workers = 1, attribute = None, verbose = False):
     """
-    Function that implements the Clique Percolation Method (CPM) algorithm for 
-    finding overlapping communities within networks, introduced by Palla et al. (2005).
+    Clique Percolation Method (CPM) algorithm for 
+    finding overlapping communities within networks.
 
     Parameters
     ----------
@@ -23,13 +23,6 @@ def clique_percolation_method(graph, k = 3, workers = 1, attribute = None, verbo
         If no attribute is given, the algorithm will display their id. The default is None.
     verbose : bool, optional
         If set to True it shows status updates. The default is False.
-
-    Raises
-    ------
-    TypeError
-        If the types of the variables passed are incorrect.
-    ValueError
-        If the values of the variables passed are incorrect.
 
     Returns
     -------
@@ -170,8 +163,3 @@ def test_karate():
         
 if __name__ == "__main__":
     test_karate()
-    
-    
-    
-    
-#! https://github.com/angelosalatino/CliquePercolationMethod-Python/tree/main
