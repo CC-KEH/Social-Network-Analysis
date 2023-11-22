@@ -1,20 +1,58 @@
+import itertools
+import networkx as nx
 import numpy as np
-def compute_MIIA(v, theta):
-    # This function should return the Maximum Influence In-Arborescence of a node v
-    # For simplicity, let's return all nodes that have a direct edge to v with weight >= theta
-    return {u for u in g.vs if g[u, v] >= theta}
 
-def compute_MIOA(v, theta):
-    # This function should return the Maximum Influence Out-Arborescence of a node v
-    # For simplicity, let's return all nodes that v has a direct edge to with weight >= theta
-    return {u for u in g.vs if g[v, u] >= theta}
+def mip(u, v, grph):
+    """ Maximum influence path function (or shortest
+    path in the graph)
+    
+    Returns:
+        - path as list of node index
+        - path length in term of propagation probability
+    """
+    path = nx.dijkstra_path(grph, u, v, weight='log_transition_probability')
+    a, b = itertools.tee(path)
+    next(b, None)
+    return path, np.exp(-sum(grph.edges[s]['log_transition_proba'] for s in zip(a,b)))
 
-def compute_alpha(v, MIIA_v):
-    # This function should compute the alpha values for v and each node in MIIA(v)
-    # For simplicity, let's return the edge weights from v to each node in MIIA(v)
-    return {u: g[v, u] for u in MIIA_v}
+def pp(u, v, grph):
+    """ Propagation probability of an edge (u, v).
+    Product of all probabilities of the shortest path
+    between u and v.
+    """
+    return mip(u, v, grph)[1]
 
-def compute_ap(w, S, MIIA_v):
-    # This function should compute the activation probability of node w given seed set S and MIIA(v)
-    # For simplicity, let's assume the activation probability is the product of edge weights from S to w
-    return np.prod([g[s, w] for s in S if s in MIIA_v])
+def miia(v, theta, grph):
+    """ Maximum Influence In-Arborescence funtion
+    All the paths to v with propagation probability
+    above theta
+    """
+    u_list = []
+    for u in range(grph.number_of_nodes()):
+        if v == u: continue
+        path, score = mip(u, v, grph)
+        if score > theta:
+            u_list.append(path)
+    return u_list
+
+def mioa(u, theta, grph):
+    """ Maximum Influence Out-Arborescence funtion
+    All the paths from u with propagation probability
+    above theta
+    """
+    v_list = []
+    for v in range(grph.number_of_nodes()):
+        if v == u: continue
+        path, score = mip(u, v, grph)
+        if score > theta:
+            v_list.append(path)
+    return v_list
+
+def in_neighbors(u, miia):
+    """ Compute in-neighbors of u in miia
+    """
+    result_set = []
+    for path in miia:
+        if u in path and path[0] != u:
+            result_set.append(path[path.index(u) - 1])
+    return result_set
