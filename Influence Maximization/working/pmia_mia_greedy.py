@@ -532,8 +532,8 @@ def celfpp(g, k):
         
     return(S,SPREAD,timelapse,LOOKUPS)
 
-G = generate_graph(directed=True)
-k = 5
+G = generate_graph(num_nodes_min_max=[100,110],directed=True)
+k = 10
 theta = 0.001
 pmia_output = pmia(G, k, theta)
 greedy_output = naive_greedy_algorithm(k, G)

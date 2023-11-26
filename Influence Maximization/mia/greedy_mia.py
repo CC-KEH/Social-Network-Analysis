@@ -170,7 +170,11 @@ def compute_pmioa(graph, node, theta, S):
         # check stopping criteria
         if min_dist < -np.log(theta):
             dist[min_edge[1]] = min_dist
-            pmioa.add_edge(min_edge[0], min_edge[1],log_transition_proba=min_dist,transition_proba=np.exp(-min_dist))
+            pmioa.add_edge(
+                min_edge[0], 
+                min_edge[1],
+                log_transition_proba=min_dist,
+                transition_proba=np.exp(-min_dist))
 
             pmioa_mip[min_edge[1]] = pmioa_mip[min_edge[0]] + [min_edge[1]]
             # update crossing edges
@@ -353,71 +357,7 @@ def naive_greedy_algorithm(n_source, grph):
     return s
 
 
-def celf(grph, k, theta):
-    """ Cost-Effective Lazy Forward (CELF) algorithm
-    using Maximum Influence In-Arborescence (MIIA) model
-    """
-    # Initialize the priority queue
-    Q = []
-    for u in range(grph.number_of_nodes()):
-        miia_u = miia(u, theta, grph)
-        delta_sigma = len(miia_u)
-        heapq.heappush(Q, (-delta_sigma, u))
-    
-    # Initialize the seed set
-    S = []
-    _, u = heapq.heappop(Q)
-    S.append(u)
-    
-    # Main loop
-    while len(S) < k:
-        if not Q:  # Check if Q is empty
-            break
-        u = Q[0][1]
-        miia_u = miia(u, theta, grph)
-        delta_sigma = len(miia_u) - len(in_neighbors(u, miia_u))
-        if delta_sigma < -Q[0][0]:
-            heapq.heapreplace(Q, (-delta_sigma, u))
-        else:
-            _, u = heapq.heappop(Q)
-            S.append(u)
-    
-    return S
-
-def celfpp(grph, k, theta):
-    """ Cost-Effective Lazy Forward Plus Plus (CELF++) algorithm
-    using Maximum Influence In-Arborescence (MIIA) model
-    """
-    # Initialize the priority queue
-    Q = []
-    for u in range(grph.number_of_nodes()):
-        miia_u = miia(u, theta, grph)
-        delta_sigma = len(miia_u)
-        heapq.heappush(Q, (-delta_sigma, u))
-    
-    # Initialize the seed set and the current spread
-    S = []
-    _, u = heapq.heappop(Q)
-    S.append(u)
-    cur_spread = len(miia(u, theta, grph))
-    
-    # Main loop
-    while len(S) < k:
-        if not Q:  # Check if Q is empty
-            break
-        u = Q[0][1]
-        miia_u = miia(u, theta, grph)
-        delta_sigma = len(miia_u) - len(in_neighbors(u, miia_u))
-        if delta_sigma < -Q[0][0]:
-            heapq.heapreplace(Q, (-delta_sigma, u))
-        else:
-            _, u = heapq.heappop(Q)
-            S.append(u)
-            cur_spread += delta_sigma
-    
-    return S
 
 g = generate_graph()
 print(naive_greedy_algorithm(10, g))
-print(celf(g, 10, 0.001))
-print(celfpp(g, 15, 0.001))
+print(pmia(g, 10, 0.001))
